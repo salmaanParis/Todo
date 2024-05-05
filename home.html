@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand {
+            color: #fff;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff; 
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 10%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signup-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .completed {
+            text-decoration: line-through;
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .todo-item input[type="checkbox"] {
+            margin-left: auto;
+            margin-top: 5px;
+        }
+        .task-item {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Project Minute</a>
+            <!-- Toggler button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="new.html" >Add</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="todoButton">ToDo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="new.html" >Add</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">LogOut</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="todo-container" style="display: none;">
+        <h1>Todo List</h1>
+        <div id="todo-list">
+            <!-- Todo items will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('todoButton').addEventListener('click', function() {
+            const todoContainer = document.getElementById('todo-container');
+            if (todoContainer.style.display === 'none') {
+                todoContainer.style.display = 'block';
+                fetchAndProcessTodos();
+            } else {
+                todoContainer.style.display = 'none';
+            }
+        });
+
+        function fetchAndProcessTodos() {
+            fetch('https://jsonplaceholder.typicode.com/todos')
+                .then(response => response.json())
+                .then(data => processTodos(data))
+                .catch(error => console.error('Error fetching todos:', error));
+        }
+
+        function processTodos(todos) {
+            let completedCount = 0;
+            const todoListDiv = document.getElementById('todo-list');
+            todoListDiv.innerHTML = ''; // Clear previous todo list
+
+            todos.forEach((todo, index) => {
+                const taskNumber = index + 1;
+
+                const taskContainer = document.createElement('div');
+                taskContainer.classList.add('task-item');
+                taskContainer.classList.add(todo.completed ? 'completed' : 'incomplete');
+                // Add todo-item class to the container
+                taskContainer.classList.add('todo-item');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `todo-${todo.id}`;
+                checkbox.disabled = todo.completed; // Disable checkbox for completed tasks
+                checkbox.checked = todo.completed; // Mark checkbox checked if task is completed
+                checkbox.onclick = () => {
+                    if (!todo.completed && checkbox.checked) {
+                        completedCount++;
+                        if (completedCount === 5) {
+                            alert('Congrats. 5 Tasks have been Successfully Completed');
+                        }
+                    } else if (!checkbox.checked) {
+                        completedCount--;
+                    }
+                };
+
+                const label = document.createElement('label');
+                label.htmlFor = `todo-${todo.id}`;
+                label.textContent = todo.title;
+
+                taskContainer.appendChild(document.createTextNode(`Task ${taskNumber}: `));
+                taskContainer.appendChild(label);
+                taskContainer.appendChild(checkbox);
+                todoListDiv.appendChild(taskContainer);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
